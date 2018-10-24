@@ -117,20 +117,12 @@ func vaildateSolarDate(year, month, date int) error {
 
 func isSolarDateExits(year, month, date int) bool {
 	switch month {
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-	case 8:
-	case 10:
-	case 12:
+	case 1, 3, 5, 7, 8, 10, 12:
+
 		if date > 31 {
 			return false
 		}
-	case 4:
-	case 6:
-	case 9:
-	case 11:
+	case 4, 6, 9, 11:
 		if date > 30 {
 			return false
 		}
