@@ -32,10 +32,10 @@ func NewLunarDate(year, month, date int, leap DateType) (*lunarDate, error) {
 }
 
 // lunar date to solar date
-func (date lunarDate) Lunar2Solar() solarDate {
+func (date lunarDate) Lunar2Solar() *solarDate {
 	days := date.CalDaysInterval(lunarDate{1900, 1, 1, NORMALMONTH})
 	d := time.Date(1900, 1, 31, 1, 0, 0, 0, time.Local).Add(time.Hour * 24 * time.Duration(days))
-	return solarDate{d.Year(), int(d.Month()), d.Day()}
+	return &solarDate{d.Year(), int(d.Month()), d.Day()}
 }
 
 // cal days count between target and date

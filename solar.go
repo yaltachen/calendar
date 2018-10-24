@@ -2,6 +2,7 @@ package calendar
 
 import (
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -37,7 +38,7 @@ func (date solarDate) CalDaysInterval(target solarDate) int {
 	return calSolarInterval(after, before)
 }
 
-func (date solarDate) Solar2Lunar() lunarDate {
+func (date solarDate) Solar2Lunar() *lunarDate {
 	daysDiff := calSolarInterval(date, solarDate{1900, 1, 31})
 
 	// i：year
@@ -59,26 +60,26 @@ func (date solarDate) Solar2Lunar() lunarDate {
 						// not lunar year
 						if lunarInfo[i]&0x0000f == 0 {
 							// return directly
-							return lunarDate{i + 1900, j, k, NORMALMONTH}
+							return &lunarDate{i + 1900, j, k, NORMALMONTH}
 						}
 
 						// lunar year
 						if j <= lunarInfo[i]&0x0000f {
 							// before lunar month
-							return lunarDate{i + 1900, j, k, NORMALMONTH}
+							return &lunarDate{i + 1900, j, k, NORMALMONTH}
 						} else if j == lunarInfo[i]&0x0000f+1 {
 							// is lunar month
-							return lunarDate{i + 1900, j - 1, k, LUNARMONTH}
+							return &lunarDate{i + 1900, j - 1, k, LUNARMONTH}
 						} else {
 							// after lunar month
-							return lunarDate{i + 1900, j - 1, k, NORMALMONTH}
+							return &lunarDate{i + 1900, j - 1, k, NORMALMONTH}
 						}
 					}
 				}
 			}
 		}
 	}
-	return lunarDate{}
+	return nil
 }
 
 func (date solarDate) isAfter(target solarDate) bool {
@@ -109,7 +110,7 @@ func vaildateSolarDate(year, month, date int) error {
 		return errors.New("Illegal date")
 	}
 
-	if isSolarDateExits(year, month, date) {
+	if !isSolarDateExits(year, month, date) {
 		return errors.New("Illegal date")
 	}
 	return nil
@@ -118,21 +119,26 @@ func vaildateSolarDate(year, month, date int) error {
 func isSolarDateExits(year, month, date int) bool {
 	switch month {
 	case 1, 3, 5, 7, 8, 10, 12:
-
+		fmt.Println("month is 1 3 5 7 8 10 12")
 		if date > 31 {
+			fmt.Println("date > 31")
 			return false
 		}
 	case 4, 6, 9, 11:
+		fmt.Println("month is 4 6 9 11")
 		if date > 30 {
+			fmt.Println("date > 30")
 			return false
 		}
 	}
 
 	if isNormalYear(year) && month == 2 && date > 28 {
+		fmt.Println("year is normal and month = 2 but date > 28")
 		return false
 	}
 
 	if !isNormalYear(year) && month == 2 && date > 29 {
+		fmt.Println("year is not normal and month = 2 but date > 29")
 		return false
 	}
 
