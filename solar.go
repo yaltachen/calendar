@@ -6,26 +6,26 @@ import (
 	"time"
 )
 
-type solarDate struct {
-	year  int
-	month int
-	date  int
+type SolarDate struct {
+	Year  int `json:"year"`
+	Month int `json:"month"`
+	Date  int `json:"date"`
 }
 
-func NewSolarDate(year, month, date int) (*solarDate, error) {
+func NewSolarDate(year, month, date int) (*SolarDate, error) {
 	var (
 		err error
 	)
 	if err = vaildateSolarDate(year, month, date); err != nil {
 		return nil, err
 	}
-	return &solarDate{year, month, date}, err
+	return &SolarDate{year, month, date}, err
 }
 
-func (date solarDate) CalDaysInterval(target solarDate) int {
+func (date SolarDate) CalDaysInterval(target SolarDate) int {
 	var (
-		before solarDate
-		after  solarDate
+		before SolarDate
+		after  SolarDate
 	)
 	if date.isAfter(target) {
 		after = date
@@ -38,8 +38,8 @@ func (date solarDate) CalDaysInterval(target solarDate) int {
 	return calSolarInterval(after, before)
 }
 
-func (date solarDate) Solar2Lunar() *lunarDate {
-	daysDiff := calSolarInterval(date, solarDate{1900, 1, 31})
+func (date SolarDate) Solar2Lunar() *LunarDate {
+	daysDiff := calSolarInterval(date, SolarDate{1900, 1, 31})
 
 	// i：year
 	// j：month
@@ -60,19 +60,19 @@ func (date solarDate) Solar2Lunar() *lunarDate {
 						// not lunar year
 						if lunarInfo[i]&0x0000f == 0 {
 							// return directly
-							return &lunarDate{i + 1900, j, k, NORMALMONTH}
+							return &LunarDate{i + 1900, j, k, NORMALMONTH}
 						}
 
 						// lunar year
 						if j <= lunarInfo[i]&0x0000f {
 							// before lunar month
-							return &lunarDate{i + 1900, j, k, NORMALMONTH}
+							return &LunarDate{i + 1900, j, k, NORMALMONTH}
 						} else if j == lunarInfo[i]&0x0000f+1 {
 							// is lunar month
-							return &lunarDate{i + 1900, j - 1, k, LUNARMONTH}
+							return &LunarDate{i + 1900, j - 1, k, LUNARMONTH}
 						} else {
 							// after lunar month
-							return &lunarDate{i + 1900, j - 1, k, NORMALMONTH}
+							return &LunarDate{i + 1900, j - 1, k, NORMALMONTH}
 						}
 					}
 				}
@@ -82,12 +82,12 @@ func (date solarDate) Solar2Lunar() *lunarDate {
 	return nil
 }
 
-func (date solarDate) isAfter(target solarDate) bool {
-	if date.year > target.year {
+func (date SolarDate) isAfter(target SolarDate) bool {
+	if date.Year > target.Year {
 		return true
-	} else if date.year == target.year && date.month > target.month {
+	} else if date.Year == target.Year && date.Month > target.Month {
 		return true
-	} else if date.year == target.year && date.month > target.month && date.date > target.date {
+	} else if date.Year == target.Year && date.Month > target.Month && date.Date > target.Date {
 		return true
 	}
 
@@ -114,6 +114,11 @@ func vaildateSolarDate(year, month, date int) error {
 		return errors.New("Illegal date")
 	}
 	return nil
+}
+
+// VaildateSolarDate VaildateSolarDate
+func VaildateSolarDate(date SolarDate) error {
+	return vaildateSolarDate(date.Year, date.Month, date.Date)
 }
 
 func isSolarDateExits(year, month, date int) bool {
@@ -153,10 +158,10 @@ func isNormalYear(year int) bool {
 	return true
 }
 
-func calSolarInterval(date1, date2 solarDate) int {
+func calSolarInterval(date1, date2 SolarDate) int {
 	now := time.Now()
 	return int(
-		time.Date(date1.year, time.Month(date1.month), date1.date, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.Local).Sub(
-			time.Date(date2.year, time.Month(date2.month), date2.date, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.Local)).Hours() / 24)
+		time.Date(date1.Year, time.Month(date1.Month), date1.Date, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.Local).Sub(
+			time.Date(date2.Year, time.Month(date2.Month), date2.Date, now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.Local)).Hours() / 24)
 
 }

@@ -52,20 +52,20 @@ func TestLunar2Solar(t *testing.T) {
 	t.SkipNow()
 	cases := []struct {
 		No    int
-		lDate lunarDate
-		sDate solarDate
+		lDate LunarDate
+		sDate SolarDate
 	}{
-		{1, lunarDate{2018, 9, 16, NORMALMONTH}, solarDate{2018, 10, 24}},
-		{2, lunarDate{1960, 6, 12, LUNARMONTH}, solarDate{1960, 8, 4}},
-		{3, lunarDate{1963, 9, 17, NORMALMONTH}, solarDate{1963, 11, 2}},
-		{4, lunarDate{1995, 11, 29, NORMALMONTH}, solarDate{1996, 1, 19}},
-		{5, lunarDate{1990, 5, 18, NORMALMONTH}, solarDate{1990, 6, 10}},
-		{6, lunarDate{1990, 5, 18, LUNARMONTH}, solarDate{1990, 7, 10}},
+		{1, LunarDate{2018, 9, 16, NORMALMONTH}, SolarDate{2018, 10, 24}},
+		{2, LunarDate{1960, 6, 12, LUNARMONTH}, SolarDate{1960, 8, 4}},
+		{3, LunarDate{1963, 9, 17, NORMALMONTH}, SolarDate{1963, 11, 2}},
+		{4, LunarDate{1995, 11, 29, NORMALMONTH}, SolarDate{1996, 1, 19}},
+		{5, LunarDate{1990, 5, 18, NORMALMONTH}, SolarDate{1990, 6, 10}},
+		{6, LunarDate{1990, 5, 18, LUNARMONTH}, SolarDate{1990, 7, 10}},
 	}
 
 	for _, c := range cases {
 		date := c.lDate.Lunar2Solar()
-		if date.year != c.sDate.year || date.month != c.sDate.month || date.date != c.sDate.date {
+		if date.Year != c.sDate.Year || date.Month != c.sDate.Month || date.Date != c.sDate.Date {
 			t.Errorf("Case %d failed. Should get %v, but got %v", c.No, c.sDate, date)
 		}
 	}

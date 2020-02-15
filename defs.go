@@ -1,6 +1,7 @@
 package calendar
 
 const (
+	// ORIGINYEAR 起始年
 	ORIGINYEAR = 1900
 )
 

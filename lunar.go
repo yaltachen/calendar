@@ -6,43 +6,46 @@ import (
 	"time"
 )
 
+// DateType  平月 OR
 type DateType bool
 
 const (
-	LUNARMONTH  DateType = true
+	// LUNARMONTH 闰月
+	LUNARMONTH DateType = true
+	// NORMALMONTH 平月
 	NORMALMONTH DateType = false
 )
 
-type lunarDate struct {
-	year  int
-	month int
-	date  int
-	leap  DateType
+type LunarDate struct {
+	Year  int      `json:"year"`
+	Month int      `json:"month"`
+	Date  int      `json:"date"`
+	Leap  DateType `json:"leap"`
 }
 
-// return a lunar date
-func NewLunarDate(year, month, date int, leap DateType) (*lunarDate, error) {
+// NewLunarDate return a lunar date
+func NewLunarDate(year, month, date int, leap DateType) (*LunarDate, error) {
 	var (
 		err error
 	)
 	if err = vaildateLunarDate(year, month, date, leap); err != nil {
 		return nil, err
 	}
-	return &lunarDate{year: year, month: month, date: date, leap: leap}, nil
+	return &LunarDate{Year: year, Month: month, Date: date, Leap: leap}, nil
 }
 
 // lunar date to solar date
-func (date lunarDate) Lunar2Solar() *solarDate {
-	days := date.CalDaysInterval(lunarDate{1900, 1, 1, NORMALMONTH})
+func (date LunarDate) Lunar2Solar() *SolarDate {
+	days := date.CalDaysInterval(LunarDate{1900, 1, 1, NORMALMONTH})
 	d := time.Date(1900, 1, 31, 1, 0, 0, 0, time.Local).Add(time.Hour * 24 * time.Duration(days))
-	return &solarDate{d.Year(), int(d.Month()), d.Day()}
+	return &SolarDate{d.Year(), int(d.Month()), d.Day()}
 }
 
 // cal days count between target and date
-func (date lunarDate) CalDaysInterval(target lunarDate) int {
+func (date LunarDate) CalDaysInterval(target LunarDate) int {
 	var (
-		before lunarDate
-		after  lunarDate
+		before LunarDate
+		after  LunarDate
 	)
 	if date.isAfter(target) {
 		before = target
@@ -55,17 +58,17 @@ func (date lunarDate) CalDaysInterval(target lunarDate) int {
 }
 
 // if date is after target return true
-func (date lunarDate) isAfter(target lunarDate) bool {
-	if date.year > target.year {
+func (date LunarDate) isAfter(target LunarDate) bool {
+	if date.Year > target.Year {
 		return true
 	}
-	if date.year == target.year && date.month > target.month {
+	if date.Year == target.Year && date.Month > target.Month {
 		return true
 	}
-	if date.year == target.year && date.month == target.month && date.leap && !target.leap {
+	if date.Year == target.Year && date.Month == target.Month && date.Leap && !target.Leap {
 		return true
 	}
-	if date.year == target.year && date.month == target.month && date.leap == target.leap && date.date > target.date {
+	if date.Year == target.Year && date.Month == target.Month && date.Leap == target.Leap && date.Date > target.Date {
 		return true
 	}
 	return false
@@ -182,7 +185,7 @@ func isContains(year, month, date int, leap DateType) bool {
 }
 
 // date1 is over date2
-func calInterval(date1, date2 lunarDate) int {
+func calInterval(date1, date2 LunarDate) int {
 	var (
 		i     int
 		j     int
@@ -190,28 +193,28 @@ func calInterval(date1, date2 lunarDate) int {
 		count int
 	)
 
-	m := getLunarMonth(date1.year)
-	if (m != 0 && date1.month > m) || date1.leap == LUNARMONTH {
-		date1.month++
+	m := getLunarMonth(date1.Year)
+	if (m != 0 && date1.Month > m) || date1.Leap == LUNARMONTH {
+		date1.Month++
 	}
 
-	m = getLunarMonth(date2.year)
-	if (m != 0 && date2.month > m) || date2.leap == LUNARMONTH {
-		date2.month++
+	m = getLunarMonth(date2.Year)
+	if (m != 0 && date2.Month > m) || date2.Leap == LUNARMONTH {
+		date2.Month++
 	}
 
 	// 开始累加
-	for i = date2.year; i <= date1.year; i++ {
+	for i = date2.Year; i <= date1.Year; i++ {
 		months := getLunarYearMonths(i)
-		if i == date2.year {
+		if i == date2.Year {
 			// 起始年份
-			for j = date2.month; j <= len(months); j++ {
+			for j = date2.Month; j <= len(months); j++ {
 
-				if j == date2.month {
+				if j == date2.Month {
 					// 起始月份
 					// 从当日开始
-					for k = date2.date; k <= months[j-1]; k++ {
-						if i == date1.year && j == date1.month && k == date1.date {
+					for k = date2.Date; k <= months[j-1]; k++ {
+						if i == date1.Year && j == date1.Month && k == date1.Date {
 							return count
 						}
 						count++
@@ -220,7 +223,7 @@ func calInterval(date1, date2 lunarDate) int {
 					// 非起始分yue
 					// 从1号开始
 					for k = 1; k <= months[j-1]; k++ {
-						if i == date1.year && j == date1.month && k == date1.date {
+						if i == date1.Year && j == date1.Month && k == date1.Date {
 							return count
 						}
 						count++
@@ -231,7 +234,7 @@ func calInterval(date1, date2 lunarDate) int {
 			// 非起始年份，继续循环，从1月1日开始
 			for j = 1; j <= len(months); j++ {
 				for k = 1; k <= months[j-1]; k++ {
-					if i == date1.year && j == date1.month && k == date1.date {
+					if i == date1.Year && j == date1.Month && k == date1.Date {
 						return count
 					}
 
